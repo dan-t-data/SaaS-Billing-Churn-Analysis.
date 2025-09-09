@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<!-- saved from url=(0074)file:///C:/Users/danie/Downloads/payment_dashboard_with_filters%20(1).html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Analysis Dashboard with Filters</title>
+    <script src="./Payment Analysis Dashboard with Filters_files/chart.min.js.download"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 15px;
+            background-color: #f7f7f7;
+            color: #333333;
+        }
+        .dashboard {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        /* Filter Controls Styling */
+        .filters-container {
+            background: white;
+            border: 1px solid #d3d3d3;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .filters-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e8e8e8;
+            padding-bottom: 8px;
+        }
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            align-items: end;
+        }
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .filter-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .filter-select, .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #d3d3d3;
+            border-radius: 4px;
+            background: white;
+            font-size: 13px;
+            color: #333333;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .filter-select:hover, .filter-input:hover {
+            border-color: #1f77b4;
+        }
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: #1f77b4;
+            box-shadow: 0 0 0 2px rgba(31, 119, 180, 0.1);
+        }
+        .clear-filters-btn {
+            padding: 8px 16px;
+            background: #f8f9fa;
+            border: 1px solid #d3d3d3;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #666666;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .clear-filters-btn:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        /* Dashboard Grid */
+        .dashboard-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto auto auto auto;
+            gap: 15px;
+        }
+        .chart-container {
+            background: white;
+            border: 1px solid #d3d3d3;
+            border-radius: 4px;
+            padding: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .chart-container.full-width {
+            grid-column: 1 / -1;
+        }
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+        .chart-wrapper.tall {
+            height: 350px;
+        }
+        .kpi-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            grid-column: 1 / -1;
+        }
+        .kpi-card {
+            background: white;
+            border: 1px solid #d3d3d3;
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1f77b4;
+        }
+        .kpi-label {
+            font-size: 12px;
+            color: #666666;
+            font-weight: 500;
+        }
+        .heatmap-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        .heatmap-table th {
+            background: #f0f0f0;
+            padding: 8px;
+            border: 1px solid #d3d3d3;
+            font-weight: 600;
+            color: #333333;
+            text-align: center;
+        }
+        .heatmap-table td {
+            padding: 12px 8px;
+            border: 1px solid #d3d3d3;
+            text-align: center;
+            font-weight: 600;
+        }
+        .heatmap-table .row-header {
+            background: #f8f8f8;
+            text-align: left;
+            padding-left: 12px;
+            font-weight: 600;
+        }
+        .heat-1 { background-color: #deebf7; color: #3182bd; }
+        .heat-2 { background-color: #c6dbef; color: #3182bd; }
+        .heat-3 { background-color: #9ecae1; color: #08519c; }
+        .heat-4 { background-color: #6baed6; color: #08519c; }
+        .heat-5 { background-color: #4292c6; color: white; }
+        .heat-6 { background-color: #2171b5; color: white; }
+        .heat-7 { background-color: #08519c; color: white; }
+        .dashboard-title {
+            grid-column: 1 / -1;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 5px;
+            padding: 15px;
+            background: white;
+            border: 1px solid #d3d3d3;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .active-filters {
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #1565c0;
+        }
+        .filter-tag {
+            display: inline-block;
+            background: #1f77b4;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin: 2px;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard-title">Payment Method Analysis Dashboard</div>
+        
+        <!-- Filter Controls -->
+        <div class="filters-container">
+            <div class="filters-title">🔍 Dashboard Filters</div>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Region</label>
+                    <select class="filter-select" id="regionFilter">
+                        <option value="all">All Regions</option>
+                        <option value="midwest">Midwest</option>
+                        <option value="south">South</option>
+                        <option value="east">East</option>
+                        <option value="west">West</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Plan Type</label>
+                    <select class="filter-select" id="planFilter">
+                        <option value="all">All Plans</option>
+                        <option value="enterprise">Enterprise</option>
+                        <option value="enterprise-multi">Enterprise Multi-Site</option>
+                        <option value="standard">Standard</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Payment Method</label>
+                    <select class="filter-select" id="paymentFilter">
+                        <option value="all">All Methods</option>
+                        <option value="credit-card">Credit Card</option>
+                        <option value="ach">ACH</option>
+                        <option value="wire">Wire</option>
+                        <option value="check">Check</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Date Range</label>
+                    <select class="filter-select" id="dateFilter">
+                        <option value="all">All Time</option>
+                        <option value="last-30">Last 30 Days</option>
+                        <option value="last-90">Last 90 Days</option>
+                        <option value="last-365">Last Year</option>
+                        <option value="ytd">Year to Date</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button class="clear-filters-btn" onclick="clearAllFilters()">Clear All Filters</button>
+                </div>
+            </div>
+            <div id="activeFilters" class="active-filters" style="display: none;">
+                <strong>Active Filters:</strong> <span id="filterTags"><span class="filter-tag">Region: west</span><span class="filter-tag">Plan: enterprise multi</span><span class="filter-tag">Payment: ach</span></span>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <!-- KPI Cards -->
+            <div class="kpi-container">
+                <div class="kpi-card">
+                    <div class="kpi-value" id="kpi-credit-churn">1.3%</div>
+                    <div class="kpi-label">Credit Card Churn</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="kpi-wire-churn">6.2%</div>
+                    <div class="kpi-label">Wire Churn</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="kpi-check-churn">11.8%</div>
+                    <div class="kpi-label">Check Churn</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="kpi-arr-opportunity">$29.4M</div>
+                    <div class="kpi-label">5-Year ARR Opportunity Gap</div>
+                </div>
+            </div>
+
+            <!-- Payment Delays vs Churn -->
+            <div class="chart-container">
+                <div class="chart-title">Payment Delays vs Churn Rate (Exponential Relationship)</div>
+                <div class="chart-wrapper">
+                    <canvas id="delayChart" width="867" height="450" style="display: block; box-sizing: border-box; height: 300px; width: 578px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Payment Method Comparison -->
+            <div class="chart-container">
+                <div class="chart-title">Churn Rate by Payment Method</div>
+                <div class="chart-wrapper">
+                    <canvas id="methodChart" width="867" height="450" style="display: block; box-sizing: border-box; height: 300px; width: 578px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Regional Heatmap -->
+            <div class="chart-container full-width">
+                <div class="chart-title">Churn Rate by Region and Plan Type (%)</div>
+                <div class="chart-wrapper">
+                    <table class="heatmap-table" id="heatmapTable">
+                        <thead>
+                            <tr>
+                                <th>Plan Type</th>
+                                <th style="">Midwest</th>
+                                <th style="">South</th>
+                                <th style="">East</th>
+                                <th style="">West</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="">
+                                <td class="row-header">Enterprise</td>
+                                <td class="heat-7" style="">9.1%</td>
+                                <td class="heat-7" style="">8.8%</td>
+                                <td class="heat-2" style="">3.0%</td>
+                                <td class="heat-1" style="">2.8%</td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">Enterprise Multi-Site</td>
+                                <td class="heat-7" style="">9.1%</td>
+                                <td class="heat-6" style="">8.6%</td>
+                                <td class="heat-3" style="">3.2%</td>
+                                <td class="heat-2" style="">2.9%</td>
+                            </tr>
+                            <tr style="">
+                                <td class="row-header">Standard</td>
+                                <td class="heat-5" style="">6.0%</td>
+                                <td class="heat-5" style="">5.5%</td>
+                                <td class="heat-4" style="">4.2%</td>
+                                <td class="heat-3" style="">3.8%</td>
+                            </tr>
+                            <tr>
+                                <td class="row-header">Average</td>
+                                <td class="heat-5" style="">5.8%</td>
+                                <td class="heat-5" style="">5.8%</td>
+                                <td class="heat-2" style="">3.1%</td>
+                                <td class="heat-2" style="">3.1%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SaaS ARR Base Erosion Model -->
+            <div class="chart-container">
+                <div class="chart-title">ARR Base Erosion Due to Payment Issues (5-Year SaaS Impact)</div>
+                <div class="chart-wrapper">
+                    <canvas id="arrChart" width="867" height="450" style="display: block; box-sizing: border-box; height: 300px; width: 578px;"></canvas>
+                </div>
+            </div>
+
+            <!-- Regional Distribution -->
+            <div class="chart-container">
+                <div class="chart-title">Payment Method Distribution by Region</div>
+                <div class="chart-wrapper">
+                    <canvas id="distributionChart" style="box-sizing: border-box; display: block; height: 300px; width: 578px;" width="867" height="450"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global chart variables
+        let charts = {};
+        
+        // Sample data - in a real scenario, this would come from your API
+        const sampleData = {
+            regions: ['Midwest', 'South', 'East', 'West'],
+            paymentMethods: ['Credit Card', 'ACH', 'Wire', 'Check'],
+            planTypes: ['Enterprise', 'Enterprise Multi-Site', 'Standard'],
+            delayData: {
+                labels: ['0-5 days', '6-15 days', '16-30 days', '30+ days'],
+                values: [0.8, 3.2, 11.5, 25]
+            },
+            methodData: {
+                labels: ['Credit Card (4 days)', 'ACH (8 days)', 'Wire (12 days)', 'Check (22 days)'],
+                values: [1.3, 2.8, 6.2, 11.8]
+            },
+            regionalData: {
+                'Midwest': { automated: 32, manual: 68 },
+                'South': { automated: 25, manual: 75 },
+                'East': { automated: 68, manual: 32 },
+                'West': { automated: 75, manual: 25 }
+            }
+        };
+
+        // Filter state
+        let currentFilters = {
+            region: 'all',
+            plan: 'all',
+            payment: 'all',
+            date: 'all'
+        };
+
+        // Initialize all charts
+        function initializeCharts() {
+            // Payment Delays vs Churn
+            charts.delayChart = new Chart(document.getElementById('delayChart'), {
+                type: 'line',
+                data: {
+                    labels: sampleData.delayData.labels,
+                    datasets: [{
+                        data: sampleData.delayData.values,
+                        borderColor: '#1f77b4',
+                        backgroundColor: 'rgba(31, 119, 180, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#1f77b4',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        fill: true,
+                        tension: 0.2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { 
+                            title: { display: true, text: 'Payment Delay Range', font: { size: 12 } },
+                            ticks: { font: { size: 11 } },
+                            grid: { color: '#e8e8e8' }
+                        },
+                        y: { 
+                            title: { display: true, text: 'Churn Rate (%)', font: { size: 12 } },
+                            ticks: { font: { size: 11 } },
+                            grid: { color: '#e8e8e8' },
+                            beginAtZero: true 
+                        }
+                    }
+                }
+            });
+
+            // Payment Method Comparison
+            charts.methodChart = new Chart(document.getElementById('methodChart'), {
+                type: 'bar',
+                data: {
+                    labels: sampleData.methodData.labels,
+                    datasets: [{
+                        data: sampleData.methodData.values,
+                        backgroundColor: ['#1f77b4', '#2ca02c', '#ff7f0e', '#d62728'],
+                        borderColor: ['#1f77b4', '#2ca02c', '#ff7f0e', '#d62728'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { 
+                            title: { display: true, text: 'Payment Method (Avg Delay)', font: { size: 12 } },
+                            ticks: { font: { size: 10 } },
+                            grid: { display: false }
+                        },
+                        y: { 
+                            title: { display: true, text: 'Monthly Churn Rate (%)', font: { size: 12 } },
+                            ticks: { font: { size: 11 } },
+                            grid: { color: '#e8e8e8' },
+                            beginAtZero: true 
+                        }
+                    }
+                }
+            });
+
+            // SaaS ARR Base Erosion Model
+            charts.arrChart = new Chart(document.getElementById('arrChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+                    datasets: [{
+                        label: 'Current ARR (with payment issues)',
+                        data: [30.0, 27.06, 24.12, 21.18, 18.24, 15.30],
+                        borderColor: '#d62728',
+                        backgroundColor: 'rgba(214, 39, 40, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#d62728',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        fill: false,
+                        tension: 0.1
+                    }, {
+                        label: 'Optimized ARR (payment issues fixed)',
+                        data: [30.0, 32.94, 35.88, 38.82, 41.76, 44.70],
+                        borderColor: '#2ca02c',
+                        backgroundColor: 'rgba(44, 160, 44, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#2ca02c',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        fill: false,
+                        tension: 0.1
+                    }, {
+                        label: 'ARR Gap (opportunity cost)',
+                        data: [0, 5.88, 11.76, 17.64, 23.52, 29.40],
+                        borderColor: '#1f77b4',
+                        backgroundColor: 'rgba(31, 119, 180, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#1f77b4',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 1,
+                        fill: true,
+                        tension: 0.1,
+                        borderDash: [5, 5]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { 
+                            position: 'top',
+                            labels: { font: { size: 10 }, padding: 15 }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            title: { display: true, text: 'Timeline', font: { size: 12 } },
+                            ticks: { font: { size: 11 } },
+                            grid: { color: '#e8e8e8' }
+                        },
+                        y: { 
+                            title: { display: true, text: 'Annual Recurring Revenue ($M)', font: { size: 12 } },
+                            ticks: { 
+                                font: { size: 11 },
+                                callback: function(value) { return '$' + value + 'M'; }
+                            },
+                            grid: { color: '#e8e8e8' },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Regional Distribution
+            updateDistributionChart();
+        }
+
+        // Update distribution chart based on filters
+        function updateDistributionChart() {
+            if (charts.distributionChart) {
+                charts.distributionChart.destroy();
+            }
+
+            const filteredRegions = currentFilters.region === 'all' 
+                ? sampleData.regions 
+                : [currentFilters.region.charAt(0).toUpperCase() + currentFilters.region.slice(1)];
+
+            const automatedData = [];
+            const manualData = [];
+            const labels = [];
+
+            filteredRegions.forEach(region => {
+                if (sampleData.regionalData[region]) {
+                    labels.push(region);
+                    automatedData.push(sampleData.regionalData[region].automated);
+                    manualData.push(sampleData.regionalData[region].manual);
+                }
+            });
+
+            charts.distributionChart = new Chart(document.getElementById('distributionChart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Automated (%)',
+                        data: automatedData,
+                        backgroundColor: '#1f77b4',
+                        borderColor: '#1f77b4',
+                        borderWidth: 1
+                    }, {
+                        label: 'Manual (%)',
+                        data: manualData,
+                        backgroundColor: '#aec7e8',
+                        borderColor: '#aec7e8',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { 
+                        legend: { 
+                            position: 'top',
+                            labels: { font: { size: 11 }, padding: 15 }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            stacked: true,
+                            title: { display: true, text: 'Region', font: { size: 12 } },
+                            ticks: { font: { size: 11 } },
+                            grid: { display: false }
+                        },
+                        y: { 
+                            stacked: true,
+                            title: { display: true, text: 'Percentage (%)', font: { size: 12 } },
+                            ticks: { font: { size: 11 } },
+                            grid: { color: '#e8e8e8' },
+                            max: 100 
+                        }
+                    }
+                }
+            });
+        }
+
+        // Filter event listeners
+        function setupFilterEventListeners() {
+            document.getElementById('regionFilter').addEventListener('change', function(e) {
+                currentFilters.region = e.target.value;
+                applyFilters();
+            });
+
+            document.getElementById('planFilter').addEventListener('change', function(e) {
+                currentFilters.plan = e.target.value;
+                applyFilters();
+            });
+
+            document.getElementById('paymentFilter').addEventListener('change', function(e) {
+                currentFilters.payment = e.target.value;
+                applyFilters();
+            });
+
+            document.getElementById('dateFilter').addEventListener('change', function(e) {
+                currentFilters.date = e.target.value;
+                applyFilters();
+            });
+        }
+
+        // Apply filters to dashboard
+        function applyFilters() {
+            updateActiveFiltersDisplay();
+            updateDistributionChart();
+            updateKPIs();
+            updateHeatmap();
+            // In a real implementation, you would also update other charts based on filtered data
+        }
+
+        // Update KPIs based on filters
+        function updateKPIs() {
+            // Sample logic - adjust KPIs based on selected filters
+            let creditChurn = 1.3;
+            let wireChurn = 6.2;
+            let checkChurn = 11.8;
+            let arrOpportunity = 29.4;
+
+            // Apply region-based adjustments
+            if (currentFilters.region === 'midwest' || currentFilters.region === 'south') {
+                creditChurn *= 1.2;
+                wireChurn *= 1.15;
+                checkChurn *= 1.1;
+                arrOpportunity *= 1.3;
+            } else if (currentFilters.region === 'east' || currentFilters.region === 'west') {
+                creditChurn *= 0.8;
+                wireChurn *= 0.85;
+                checkChurn *= 0.9;
+                arrOpportunity *= 0.7;
+            }
+
+            // Apply payment method filter
+            if (currentFilters.payment !== 'all') {
+                arrOpportunity *= 0.6; // Focused opportunity
+            }
+
+            document.getElementById('kpi-credit-churn').textContent = creditChurn.toFixed(1) + '%';
+            document.getElementById('kpi-wire-churn').textContent = wireChurn.toFixed(1) + '%';
+            document.getElementById('kpi-check-churn').textContent = checkChurn.toFixed(1) + '%';
+            document.getElementById('kpi-arr-opportunity').textContent = '$' + arrOpportunity.toFixed(1) + 'M';
+        }
+
+        // Update heatmap based on filters
+        function updateHeatmap() {
+            const heatmapTable = document.getElementById('heatmapTable');
+            const rows = heatmapTable.querySelectorAll('tbody tr');
+            
+            // Show/hide rows based on plan filter
+            rows.forEach(row => {
+                const planType = row.querySelector('.row-header').textContent.toLowerCase();
+                if (currentFilters.plan === 'all' || 
+                    (currentFilters.plan === 'enterprise' && planType.includes('enterprise') && !planType.includes('multi')) ||
+                    (currentFilters.plan === 'enterprise-multi' && planType.includes('multi-site')) ||
+                    (currentFilters.plan === 'standard' && planType.includes('standard')) ||
+                    planType.includes('average')) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Show/hide columns based on region filter
+            const headers = heatmapTable.querySelectorAll('th');
+            const allRows = heatmapTable.querySelectorAll('tr');
+            
+            headers.forEach((header, index) => {
+                const region = header.textContent.toLowerCase();
+                const shouldShow = currentFilters.region === 'all' || currentFilters.region === region;
+                
+                if (index > 0) { // Skip first column (Plan Type)
+                    header.style.display = shouldShow ? '' : 'none';
+                    
+                    // Hide corresponding cells in all rows
+                    allRows.forEach(row => {
+                        const cell = row.cells[index];
+                        if (cell) {
+                            cell.style.display = shouldShow ? '' : 'none';
+                        }
+                    });
+                }
+            });
+        }
+
+        // Update active filters display
+        function updateActiveFiltersDisplay() {
+            const activeFiltersDiv = document.getElementById('activeFilters');
+            const filterTagsSpan = document.getElementById('filterTags');
+            const activeFilters = [];
+
+            if (currentFilters.region !== 'all') {
+                activeFilters.push(`Region: ${currentFilters.region}`);
+            }
+            if (currentFilters.plan !== 'all') {
+                activeFilters.push(`Plan: ${currentFilters.plan.replace('-', ' ')}`);
+            }
+            if (currentFilters.payment !== 'all') {
+                activeFilters.push(`Payment: ${currentFilters.payment.replace('-', ' ')}`);
+            }
+            if (currentFilters.date !== 'all') {
+                activeFilters.push(`Date: ${currentFilters.date.replace('-', ' ')}`);
+            }
+
+            if (activeFilters.length > 0) {
+                filterTagsSpan.innerHTML = activeFilters.map(filter => 
+                    `<span class="filter-tag">${filter}</span>`
+                ).join('');
+                activeFiltersDiv.style.display = 'block';
+            } else {
+                activeFiltersDiv.style.display = 'none';
+            }
+        }
+
+        // Clear all filters
+        function clearAllFilters() {
+            currentFilters = {
+                region: 'all',
+                plan: 'all',
+                payment: 'all',
+                date: 'all'
+            };
+
+            // Reset filter controls
+            document.getElementById('regionFilter').value = 'all';
+            document.getElementById('planFilter').value = 'all';
+            document.getElementById('paymentFilter').value = 'all';
+            document.getElementById('dateFilter').value = 'all';
+
+            applyFilters();
+        }
+
+        // Initialize dashboard on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            setupFilterEventListeners();
+            updateActiveFiltersDisplay();
+        });
+    </script>
+
+</body></html>
