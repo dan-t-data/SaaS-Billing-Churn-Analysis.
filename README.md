@@ -21,8 +21,8 @@ SaaS companies rely on **Annual Recurring Revenue (ARR)** stability. While this 
 
 ## Schema Diagram  
 _Data model combining Invoices, Subscriptions, and Customers for analysis._  
+<img width="1220" height="1150" alt="Schema Diagram" src="https://github.com/user-attachments/assets/4d92f836-0e70-4d7b-8ad2-839479d6f1ef" />
 
-<img width="1220" height="1150" alt="Schema Diagram" src="https://github.com/user-attachments/assets/56447084-c5c1-4d30-8de0-3ea4c958f2d7" />
 
 
 ---
@@ -71,10 +71,15 @@ _Data model combining Invoices, Subscriptions, and Customers for analysis._
 ---
 ## Dashboard Visuals  
 <img width="867" height="450" alt="image" src="https://github.com/user-attachments/assets/2c630a36-3ef9-43bf-ac9a-d60bd84301f6" />
+
 <img width="867" height="450" alt="image" src="https://github.com/user-attachments/assets/9eaf3d5c-ea7f-428f-a1ad-d1eba25cfcc8" />
+
 <img width="912" height="200" alt="image" src="https://github.com/user-attachments/assets/8e178b77-5f11-4f1d-ad9f-d9dce33319b4" />
+
 <img width="867" height="450" alt="image" src="https://github.com/user-attachments/assets/f15bb5e7-d9af-4dca-9ef8-839a632dfc40" />
+
 <img width="867" height="450" alt="image" src="https://github.com/user-attachments/assets/cde6b312-9e77-443f-a59f-458833963134" />
+
 ---
 
 ## Next Steps  
