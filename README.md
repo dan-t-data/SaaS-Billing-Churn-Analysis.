@@ -70,15 +70,11 @@ _Data model combining Invoices, Subscriptions, and Customers for analysis._
 - Provide dashboards for Sales and Customer Success to act quickly.  
 ---
 ## Dashboard Visuals  
-<img width="867" height="450" alt="image" src="https://github.com/user-attachments/assets/2c630a36-3ef9-43bf-ac9a-d60bd84301f6" />
-
-<img width="867" height="450" alt="image" src="https://github.com/user-attachments/assets/9eaf3d5c-ea7f-428f-a1ad-d1eba25cfcc8" />
-
-<img width="912" height="200" alt="image" src="https://github.com/user-attachments/assets/8e178b77-5f11-4f1d-ad9f-d9dce33319b4" />
-
-<img width="867" height="450" alt="image" src="https://github.com/user-attachments/assets/f15bb5e7-d9af-4dca-9ef8-839a632dfc40" />
-
-<img width="867" height="450" alt="image" src="https://github.com/user-attachments/assets/cde6b312-9e77-443f-a59f-458833963134" />
+<img width="452" height="272" alt="image" src="https://github.com/user-attachments/assets/28373123-3d14-4b68-922a-fd859fcd179d" />
+<img width="271" height="228" alt="image" src="https://github.com/user-attachments/assets/1176cba3-6c9c-49b7-8ba6-59c067f5e6a3" />
+<img width="917" height="210" alt="image" src="https://github.com/user-attachments/assets/ea39caef-763f-445e-88d2-869c2a020838" />
+<img width="449" height="264" alt="image" src="https://github.com/user-attachments/assets/a3357c02-6836-496e-b46c-7d06260629a0" />
+<img width="446" height="263" alt="image" src="https://github.com/user-attachments/assets/5b50e3fe-50d7-4d11-92bc-cb4f33485b26" />
 
 ---
 
